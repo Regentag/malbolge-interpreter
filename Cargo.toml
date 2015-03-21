@@ -1,0 +1,5 @@
+[package]
+
+name = "malbolge-interpreter"
+version = "0.0.1"
+authors = ["Regentag <antiinternet@gmail.com>"]
