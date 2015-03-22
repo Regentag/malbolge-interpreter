@@ -31,12 +31,11 @@
 /* you to specify a custom memory-model; the best model to choose in  */
 /* this case is /Ashd (near code, huge data), I think.                */
 
-#![feature(env)]
-#![feature(old_io)]
-#![feature(old_path)]
 use std::char;
 use std::env;
-use std::old_io::{File, Open, Read, stdin};
+use std::path::Path;
+use std::fs::File;
+use std::io::{ Read, stdin };
 
 // Checks whether c is a white-space character.
 // White-space characters are any of
@@ -116,7 +115,7 @@ fn main()
 	}
 
 	let f_path = Path::new( &args[1] );
-	let mut f = match File::open_mode( &f_path, Open, Read )
+	let f = match File::open( f_path )
 	{
 		Ok(f) => f,
 		Err(_) => {
@@ -130,12 +129,13 @@ fn main()
 	let mut x : u8;
 	let mut mem : [u16; 59049] = [0; 59049];
 
+	let mut src_bytes = f.bytes();
 	loop
 	{
-		x = match f.read_byte()
+		x = match src_bytes.next()
 		{
-			Ok(x) => x,
-			Err(_) => break,
+			Some(r) => r.unwrap(),
+			None => break,
 		};
 
 		if isspace(x)
@@ -208,7 +208,7 @@ fn exec( mem: &mut [u16; 59049] )
 				// C의 getc()를 사용한 본래의 인터프리터와는 달리
 				// 입력시 반드시 return key를 눌러주어야 한다.
 				// rust에서 getc()를 사용할 수 있을까?
-				let x = stdin().read_byte().unwrap();
+				let x = read_single_byte();
 
 				// EOF or Ctrl+Z
 				// TODO: Ctrl+Z에 대한 입력은 임의로 추가하였음.
@@ -274,3 +274,22 @@ fn op( x: u16, y: u16 ) -> u16
 
 	return i;
 }
+
+///
+/// 표준입력(stdin)에서 한 바이트를 읽는다.
+///
+fn read_single_byte() -> u8
+{
+	let mut s = String::new();
+	let len = stdin().read_line(&mut s);
+
+	if len.unwrap() >= 3
+	{
+		s.as_bytes()[ 0 ]
+	}
+	else
+	{
+		0
+	}
+}
+
