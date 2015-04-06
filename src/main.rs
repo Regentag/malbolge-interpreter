@@ -1,6 +1,6 @@
 // MALBOLGE 언어 인터프리터
 //
-// C로 작성된 MALBOLGE의 인터프리터를 Rust(1.0 beta-2)로 다시 작성함.
+// C로 작성된 MALBOLGE의 인터프리터를 Rust 1.0 Beta로 다시 작성함.
 // 원본코드는 다음 주소에서 얻을 수 있습니다:
 //    http://www.lscheffer.com/malbolge_interp.html
 //
@@ -201,7 +201,7 @@ fn exec( mem: &mut [u16; 59049] )
 			'<' => {
 				// C언어의 putc()와 동일한 출력을 위해
 				// 하위 1바이트만 남긴다.
-				let _a_ch: u32 = (a & 0x00FF) as u32;
+				let _a_ch: u32 = (a & 0x000000FF) as u32;
 				print!( "{}", char::from_u32(_a_ch).unwrap() )
 			},
 			'/' => {
@@ -278,14 +278,14 @@ fn op( x: u16, y: u16 ) -> u16
 ///
 /// 표준입력(stdin)에서 한 바이트를 읽는다.
 ///
-fn read_single_byte() -> u8
+fn read_single_byte() -> i8
 {
 	let mut s = String::new();
 	let len = stdin().read_line(&mut s);
 
 	if len.unwrap() >= 3
 	{
-		s.as_bytes()[ 0 ]
+		s.as_bytes()[ 0 ] as i8
 	}
 	else
 	{
