@@ -49,7 +49,7 @@ fn isspace( c: u8 ) -> bool
 {
 	return match c
 	{
-		0x20  => true,
+		0x20 => true,
 		0x09 => true,
 		0x0a => true,
 		0x0b => true,
@@ -101,7 +101,7 @@ fn valid_op( o: char ) -> bool
 		'/' => true,
 		'v' => true,
 		'o' => true,
-		_    => false
+		_   => false
 	}
 }
 
@@ -117,7 +117,7 @@ fn main()
 	let f_path = Path::new( &args[1] );
 	let f = match File::open( f_path )
 	{
-		Ok(f) => f,
+		Ok(f)  => f,
 		Err(_) => {
 			 println!( "can't open file." );
 			 return;
@@ -125,18 +125,11 @@ fn main()
 	};
 
 	let mut i : usize = 0;
-	//let mut j : u16;
-	let mut x : u8;
 	let mut mem : [u16; 59049] = [0; 59049];
 
-	let mut src_bytes = f.bytes();
-	loop
+	for b in f.bytes()
 	{
-		x = match src_bytes.next()
-		{
-			Some(r) => r.unwrap(),
-			None => break,
-		};
+		let x = b.unwrap();
 
 		if isspace(x)
 		{
